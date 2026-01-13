@@ -1,4 +1,4 @@
- Hybrid Research Paper RAG Chatbot
+Hybrid Research Paper RAG Chatbot
 
 A Retrieval-Augmented Generation (RAG) based chatbot that allows users to upload research papers (PDF) and ask questions about their content using Large Language Models.
 
