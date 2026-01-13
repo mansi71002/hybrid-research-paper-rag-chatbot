@@ -5,6 +5,8 @@ from ingest import extract_text
 from retriever import build_faiss, build_bm25
 from query_expansion import expand_query
 from llm import load_llm
+from retriever import hybrid_search
+
 
 # -------------------------------
 # Ensure upload directory exists
@@ -40,20 +42,34 @@ if pdf:
     if query:
         llm = load_llm()
         expanded_query = expand_query(llm, query)
+        
 
-        prompt = f"""
-        Explain in very simple terms.
-        If math exists, explain step by step.
+        retrieved_chunks = hybrid_search(
+        expanded_query,
+        chunks,
+        faiss_index,
+        bm25
+    )
 
-        Question:
-        {query}
+    context = "\n\n".join(retrieved_chunks)
 
-        Context:
-        {expanded_query}
-        """
+    prompt = f"""
+You are a research assistant.
 
-        response = llm.invoke(prompt)
-        st.write(response.content)
+Answer clearly and simply.
+If math is present, explain it step by step.
+
+Context:
+{context}
+
+Question:
+{query}
+"""
+
+    response = llm.invoke(prompt)
+    st.subheader("Answer")
+    st.write(response.content)
+
 
 
 
